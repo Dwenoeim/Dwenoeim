@@ -9,7 +9,7 @@ function find_idle_profile() {
     then
       CURRENT_PROFILE=real2
     else
-      CURRENT_PROFILE=$(curl -s https://cookie-house.store/profile)
+      CURRENT_PROFILE=$(curl -s https://dwenoeim.store/profile)
     fi
 
     if [ ${CURRENT_PROFILE} == real1 ]
