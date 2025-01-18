@@ -52,7 +52,7 @@ jobs:
         aws-region: ap-northeast-2
 
     - name: S3에 배포
-      run: aws s3 cp deploy/dwenoeim.zip s3://dwenoeim-build/dwenoeim.zip
+      run: aws s3 cp deploy/dwenoeim.zip s3://dwenoeim-bucket/dwenoeim.zip
 
     - name: AWS CodeDeploy를 사용한 배포
       run: |
