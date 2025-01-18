@@ -3,7 +3,7 @@ name: Java CI/CD with Gradle and AWS CodeDeploy
 on:
   push:
     branches:
-      - main
+      - master
 
 permissions:
   contents: read
