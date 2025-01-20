@@ -32,4 +32,9 @@ public class ProfileController {
     public String test() {
         return "test";
     }
+
+    @GetMapping("/cicd")
+    public String cicd() {
+        return "ci/cd 툴 테스트";
+    }
 }
