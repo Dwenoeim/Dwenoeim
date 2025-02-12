@@ -66,6 +66,16 @@ public class AwsS3Service {
 
     public void deleteFile(String fileName){
         amazonS3.deleteObject(new DeleteObjectRequest(bucket, fileName));
-        System.out.println(bucket);
+        System.out.println("delete "+fileName);
+    }
+
+    public String getFileUrl(String fileName) {
+        // S3에 파일 존재 여부 확인
+        if (!amazonS3.doesObjectExist(bucket, fileName)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 파일이 존재하지 않습니다: " + fileName);
+        }
+
+        // 존재하면 해당 파일의 URL 반환
+        return amazonS3.getUrl(bucket, fileName).toString();
     }
 }
