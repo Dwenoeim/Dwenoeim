@@ -22,12 +22,13 @@ public class AmazonS3Controller {
     private final AwsS3Service awsS3Service;
 
     @PostMapping
-    public ResponseEntity<FileUploadResponse> uploadFile(@RequestParam("file") List<MultipartFile> multipartFiles){
+    public ResponseEntity<FileUploadResponse> uploadFile(@RequestParam("file") List<MultipartFile> multipartFiles,
+                                                         @RequestParam("userId") Long userId){
         if (multipartFiles == null || multipartFiles.isEmpty()) {
             return ResponseEntity.badRequest().body(new FileUploadResponse("파일이 없습니다.", null));
         }
 
-        List<String> fileUrls = awsS3Service.uploadFile(multipartFiles);
+        List<String> fileUrls = awsS3Service.uploadFile(multipartFiles ,userId);
         FileUploadResponse responseDto = new FileUploadResponse("등록이 완료되었습니다.", fileUrls);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);

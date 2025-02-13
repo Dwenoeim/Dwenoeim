@@ -5,6 +5,10 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.server.Dwenoeim.domain.Image;
+import com.server.Dwenoeim.domain.User;
+import com.server.Dwenoeim.repository.ImageRepository;
+import com.server.Dwenoeim.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -25,9 +29,14 @@ public class AwsS3Service {
     private String bucket;
 
     private final AmazonS3 amazonS3;
+    private final ImageRepository imageRepository;
+    private final UserRepository userRepository;
 
-    public List<String> uploadFile(List<MultipartFile> multipartFiles){
-        List<String> fileNameList = new ArrayList<>();
+    public List<String> uploadFile(List<MultipartFile> multipartFiles, Long userId){
+        List<String> fileUrlList = new ArrayList<>();
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."));
 
         // forEach 구문을 통해 multipartFiles 리스트로 넘어온 파일들을 순차적으로 fileNameList 에 추가
         multipartFiles.forEach(file -> {
@@ -39,14 +48,25 @@ public class AwsS3Service {
             try(InputStream inputStream = file.getInputStream()){
                 amazonS3.putObject(new PutObjectRequest(bucket, fileName, inputStream, objectMetadata)
                         .withCannedAcl(CannedAccessControlList.PublicRead));
+
+                String fileUrl =amazonS3.getUrl(bucket,fileName).toString();
+                fileUrlList.add(fileUrl);
+
+                Image image = Image.builder()
+                        .url(fileUrl)
+                        .user(user)
+                        .build();
+
+                imageRepository.save(image); //??
+
+
             } catch (IOException e){
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
             }
-            fileNameList.add(fileName);
 
         });
 
-        return fileNameList;
+        return fileUrlList;
     }
 
     // 파일명을 난수화하기 위해 UUID 를 활용하여 난수를 돌린다.
