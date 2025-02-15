@@ -27,8 +27,9 @@ public class AuthService {
 
     @Value("${spring.security.oauth2.client.registration.google.client-secret}")
     private String GOOGLE_CLIENT_SECRET;
-    private final String GOOGLE_REDIRECT_URI = "http://localhost:8080/api/oauth2/callback/google";
 
+    @Value("${spring.security.oauth2.client.registration.google.redirect-uri}")
+    private String GOOGLE_REDIRECT_URI;
 
     private final UserRepository userRepository;
     private final TokenProvider tokenProvider;

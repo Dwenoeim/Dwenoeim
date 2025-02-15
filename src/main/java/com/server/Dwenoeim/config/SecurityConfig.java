@@ -32,7 +32,11 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                        .requestMatchers("/api/oauth2/**").permitAll()
+                        .requestMatchers("/api/oauth2/**",
+                                "/swagger-ui/**",  // Swagger UI 허용
+                                "/v3/api-docs/**", // OpenAPI 문서 허용
+                                "/swagger-resources/**",
+                                "/webjars/**").permitAll()
                         .requestMatchers("/test").authenticated()
                         .anyRequest().authenticated()
                 )
