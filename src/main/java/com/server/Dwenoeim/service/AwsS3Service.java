@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -94,8 +95,23 @@ public class AwsS3Service {
         if (!amazonS3.doesObjectExist(bucket, fileName)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 파일이 존재하지 않습니다: " + fileName);
         }
-
         // 존재하면 해당 파일의 URL 반환
         return amazonS3.getUrl(bucket, fileName).toString();
+    }
+
+
+    //user의 사진url list 검색
+    public List<String> getUserImages(Long userId) {
+        // 사용자 존재 여부 확인
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."));
+
+        // 사용자의 이미지 리스트 조회
+        List<Image> images = imageRepository.findByUser(user);
+
+        // 이미지 URL 리스트로 변환
+        return images.stream()
+                .map(Image::getUrl)
+                .collect(Collectors.toList());
     }
 }
